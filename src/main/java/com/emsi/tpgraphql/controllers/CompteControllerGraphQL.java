@@ -33,6 +33,13 @@ public class CompteControllerGraphQL {
         transaction.setType(transactionRequest.getType());
         transaction.setCompte(compte);
 
+        if (transaction.getType() == TypeTransaction.DEPOT) {
+            compte.setSolde(compte.getSolde() + transaction.getMontant());
+        } else if (transaction.getType() == TypeTransaction.RETRAIT) {
+            compte.setSolde(compte.getSolde() - transaction.getMontant());
+        }
+
+        compteRepository.save(compte);
         transactionRepository.save(transaction);
         return transaction;
     }
@@ -65,12 +72,8 @@ public class CompteControllerGraphQL {
 
     @QueryMapping
     public Compte compteById(@Argument Long id) {
-        Compte compte = compteRepository.findById(id).orElse(null);
-        if (compte == null) {
-            throw new RuntimeException(String.format("Compte %s not found", id));
-        } else {
-            return compte;
-        }
+        return compteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(String.format("Compte %s not found", id)));
     }
 
     @MutationMapping
@@ -89,5 +92,20 @@ public class CompteControllerGraphQL {
                 "sum", sum,
                 "average", average
         );
+    }
+
+    @QueryMapping
+    public List<Transaction> allTransactions() {
+        return transactionRepository.findAll();
+    }
+
+    @QueryMapping
+    public List<Transaction> transactionsByType(@Argument TypeTransaction type) {
+        return transactionRepository.findByType(type);
+    }
+
+    @QueryMapping
+    public List<Transaction> allTransactionsByTypeAndAccountId(@Argument TypeTransaction type, @Argument Long accountId) {
+        return transactionRepository.findByTypeAndCompte_Id(type, accountId);
     }
 }

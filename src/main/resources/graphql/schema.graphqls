@@ -10,10 +10,13 @@ enum TypeCompte {
 
 type Query {
   allComptes: [Compte]
+  allTransactions: [Transaction]
   compteById(id: ID): Compte
   transactionStats: TransactionStats
   compteTransactions(id: ID): [Transaction]
   totalSolde: SoldeStats
+  transactionsByType(type: TypeTransaction): [Transaction]
+  allTransactionsByTypeAndAccountId(type: TypeTransaction, accountId: ID): [Transaction]
 }
 
 type Mutation {
