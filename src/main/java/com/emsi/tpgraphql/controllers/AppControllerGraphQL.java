@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Controller
 @AllArgsConstructor
-public class CompteControllerGraphQL {
+public class AppControllerGraphQL {
 
     private final CompteRepository compteRepository;
     private final TransactionRepository transactionRepository;
